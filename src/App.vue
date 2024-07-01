@@ -1,6 +1,8 @@
 <script setup>
 import { id } from 'element-plus/es/locales.mjs';
 import { ref, reactive } from 'vue'
+
+import http from './path/to/http';
 // ****************数据定义****************
 //列表数据listData
 const listData = ref([
