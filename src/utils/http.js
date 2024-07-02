@@ -46,40 +46,17 @@ export async function post(url, params) {
  * @returns {Promise<Object>} 返回一个包含服务器响应的Promise对象。
  */
 export async function put(url, params) {
-  // 参数验证
-  if (!url || typeof url !== 'string') {
-    throw new TypeError('URL must be a non-empty string.');
-  }
-  if (typeof params !== 'object' || params === null) {
-    throw new TypeError('Params must be a non-null object.');
-  }
-
-  try {
-    // 发起PUT请求
-    const response = await http({
-      //url接收id
-      url: `${url}/${params.id}`,
-      method: 'PUT', // 使用大写方法名以符合HTTP标准
-      data: params,
-    });
-
-    // 可以考虑更详细的响应状态码处理
-    if (response.status >= 200 && response.status < 300) {
-      console.log('PUT request successful:', response.data);
-      return response.data;
-    } else {
-      throw new Error(`Unexpected status code ${response.status}`);
-    }
-  } catch (error) {
-    // 错误处理细化，区分网络错误和其他错误
-    if (error instanceof TypeError || error instanceof SyntaxError) {
-      console.error('Data processing error:', error.message);
-      ElMessage.error('数据处理出错，请稍后重试。');
-    } else {
-      console.error('PUT request failed:', error.message);
-      ElMessage.error('请求失败，请检查网络或稍后重试。');
-    }
-    throw error; // 重新抛出错误，以便调用者决定如何处理
+  //
+  const res = await http({
+    url: url,
+    method: "put",
+    data: params,
+  });
+  if (res.code === 200) {
+    ElMessage.success("修改成功");
+    return res;
+  } else {
+    ElMessage.error(res.message);
   }
 }
 

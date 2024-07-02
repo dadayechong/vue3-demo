@@ -40,7 +40,7 @@ const dialogType = ref('add')
 
 get('userlistall').then(res => {
   page.value.total= res.data.data
-  console.log(res.data.data)
+  // console.log(res.data.data)
 })
 
 const getList = async () => {
@@ -49,7 +49,7 @@ const getList = async () => {
     pageSize: page.value.pageSize
   }).then(res => {
     listData.value = res.data.data
-    console.log("查询成功:", res.data.data)
+    console.log("查询成功=======》", res.data.data)
   })
 }
 
@@ -99,7 +99,6 @@ const handleRowAdd = () => {
 
 //提交表单数据
 const handleSubmit = (row) => {
-  console.log('提交表单数据')
   //若是新增表单，则获取表单数据，id为listData.length + 1，提交到列表中
   if(dialogType.value === 'add'){
     listData.value.push({
@@ -112,14 +111,13 @@ const handleSubmit = (row) => {
   }
   //若是编辑表单，则通过row获取到id，根据编辑内容请求put接口更新当前id的数据
   else if(dialogType.value === 'edit'){
-    put('/user', {
+    console.log("更新数据====》",FormData)
+    put(`/user/${FormData.id}`, {
       id: FormData.id,
       name: FormData.name,
       phone: FormData.phone,
       address: FormData.address
     })
-    ElMessage.success('更新成功')
-    getList()
     dialogFormVisible.value = false
   }
 }
@@ -154,17 +152,18 @@ const handleRowEdit = (row) => {
   FormData.name = row.name
   FormData.phone = row.phone
   FormData.address = row.address
+  console.log("获取表单数据====>",FormData)
 }
 
 //列表批量选中
 const handleSelectionChange = (val) => {
-  console.log(val)
+  // console.log(val)
   //遍历val，并将遍历出来的id值放在数组idArr中
   selectionIdArr.value = []
   val.forEach(item => {
     selectionIdArr.value.push(item.id)
   })
-  console.log(selectionIdArr.value)
+  // console.log(selectionIdArr.value)
 }
 
 </script>
