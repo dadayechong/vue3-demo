@@ -31,7 +31,7 @@ export async function post(url, params) {
       method: 'post',
       data: params
     });
-    console.log(res);
+    ElMessage.success(res.data.msg);
     return res;
   } catch (error) {
     //使用ElMessage抛出异常
@@ -46,30 +46,31 @@ export async function post(url, params) {
  * @returns {Promise<Object>} 返回一个包含服务器响应的Promise对象。
  */
 export async function put(url, params) {
-  //
-  const res = await http({
-    url: url,
-    method: "put",
-    data: params,
-  });
-  if (res.code === 200) {
-    ElMessage.success("修改成功");
+  try {
+    const res = await http({
+      url: url,
+      method: 'put',
+      data: params
+    });
+    ElMessage.success(res.msg)
+    console.log("传入修改数据=====》",params);
+    console.log("返回修改结果=====》",res.data.data);
     return res;
-  } else {
-    ElMessage.error(res.message);
+  } catch (error) {
+    //使用ElMessage抛出异常
+    ElMessage.error("更新失败,原因：" +error.message);
   }
 }
 
 
 
-export async function del(url, params) {
+export async function del(url) {
   try {
     const res = await http({
       url: url,
       method: 'delete',
-      data: params
     });
-    console.log(res);
+    ElMessage.success(res.data.msg)
     return res;
   } catch (error) {
     //使用ElMessage抛出异常

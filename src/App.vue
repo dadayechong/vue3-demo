@@ -44,7 +44,7 @@ get('userlistall').then(res => {
 })
 
 const getList = async () => {
-  get('/userlist', {
+  await get('/userlist', {
     pageNum: page.value.pageNum,
     pageSize: page.value.pageSize
   }).then(res => {
@@ -98,39 +98,48 @@ const handleRowAdd = () => {
 }
 
 //提交表单数据
-const handleSubmit = (row) => {
+const handleSubmit = () => {
   //若是新增表单，则获取表单数据，id为listData.length + 1，提交到列表中
   if(dialogType.value === 'add'){
-    listData.value.push({
-      id: page.value.total + 1,
+    // listData.value.push({
+    //   id: page.value.total + 1,
+    //   name: FormData.name,
+    //   phone: FormData.phone,
+    //   address: FormData.address
+    // })
+    post('/user', {
       name: FormData.name,
       phone: FormData.phone,
       address: FormData.address
     })
     dialogFormVisible.value = false
+    getList()
   }
   //若是编辑表单，则通过row获取到id，根据编辑内容请求put接口更新当前id的数据
   else if(dialogType.value === 'edit'){
     console.log("更新数据====》",FormData)
     put(`/user/${FormData.id}`, {
-      id: FormData.id,
       name: FormData.name,
       phone: FormData.phone,
       address: FormData.address
     })
     dialogFormVisible.value = false
+    //重新加载数据，并刷新当前页面
+    getList()
   }
 }
 
 //删除1行
-const handleRowDelete = ({id}) => {
+const handleRowDelete = (row) => {
   console.log('删除')
-  console.log(id)
+  // console.log(id)
   //1.通过id获取对应条目的索引值
-  const index = listData.value.findIndex(item => item.id === id)
+  // const index = listData.value.findIndex(item => item.id === id)
   //2.通过索引值  splice删除该行数据
-  listData.value.splice(index, 1)
-
+  // listData.value.splice(index, 1)
+  //获取该条值对应的ID
+  del(`/user/${row.ID}`)
+  getList()
 }
 
 //批量删除
@@ -138,7 +147,8 @@ const handleRowListDel = () => {
   console.log('批量删除')
   //遍历selectionIdArr，并使用handleRow Delet批量删除数据
   selectionIdArr.value.forEach(id => {
-    handleRowDelete({id})
+    //使用handleRowDelete()，批量删除数据
+    handleRowDelete({ID: id})
   })
 }
 
@@ -209,7 +219,7 @@ const handleSelectionChange = (val) => {
     <template #footer="scope">
       <div class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleSubmit(scope.row)">确认</el-button>
+        <el-button type="primary" @click="handleSubmit()">确认</el-button>
       </div>
     </template>
   </el-dialog>
