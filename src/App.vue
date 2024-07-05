@@ -2,6 +2,7 @@
 import { ref, reactive } from 'vue'
 import {get,put,post,del} from "./utils/http.js";
 import { ElMessage } from 'element-plus'
+import { id } from 'element-plus/es/locale';
 // ****************数据定义****************
 
 //列表数据listData
@@ -53,6 +54,13 @@ const getList = async () => {
   })
 }
 
+//定义一个页面刷新方法pageRefresh
+const pageRefresh = () => {
+  //刷新浏览器页面
+  window.location.reload();
+
+}
+
 getList()
 
 const handleSizeChange = (val: number) => {
@@ -70,6 +78,7 @@ const handleCurrentChange = (val: number) => {
 // 搜索相关方法
 const recoveryData = () => {
   console.log('恢复数据')
+  pageRefresh()
   //列表数据恢复初始状态
 }
 
@@ -101,6 +110,7 @@ const handleRowAdd = () => {
 const handleSubmit = () => {
   //若是新增表单，则获取表单数据，id为listData.length + 1，提交到列表中
   if(dialogType.value === 'add'){
+    console.log("新增数据====》",FormData)
     // listData.value.push({
     //   id: page.value.total + 1,
     //   name: FormData.name,
@@ -113,7 +123,8 @@ const handleSubmit = () => {
       address: FormData.address
     })
     dialogFormVisible.value = false
-    getList()
+    //刷新页面
+    pageRefresh()
   }
   //若是编辑表单，则通过row获取到id，根据编辑内容请求put接口更新当前id的数据
   else if(dialogType.value === 'edit'){
@@ -125,7 +136,7 @@ const handleSubmit = () => {
     })
     dialogFormVisible.value = false
     //重新加载数据，并刷新当前页面
-    getList()
+    pageRefresh()
   }
 }
 
@@ -139,16 +150,24 @@ const handleRowDelete = (row) => {
   // listData.value.splice(index, 1)
   //获取该条值对应的ID
   del(`/user/${row.ID}`)
-  getList()
+  pageRefresh()
 }
 
 //批量删除
 const handleRowListDel = () => {
   console.log('批量删除')
   //遍历selectionIdArr，并使用handleRow Delet批量删除数据
-  selectionIdArr.value.forEach(id => {
+  selectionIdArr.value.forEach(item => {
+    // //获取selectionIdArr当前遍历的索引
+    // const index = selectionIdArr.value.indexOf(item)
+    // console.log('当前item值=====》',item)
+    // console.log('当前index值=====》',index)
+    //构造成对象，
+    const row = {
+      ID: item
+    }
     //使用handleRowDelete()，批量删除数据
-    handleRowDelete({ID: id})
+    handleRowDelete(row)
   })
 }
 
@@ -167,13 +186,14 @@ const handleRowEdit = (row) => {
 
 //列表批量选中
 const handleSelectionChange = (val) => {
-  // console.log(val)
+  console.log('val的值是=====》',val)
   //遍历val，并将遍历出来的id值放在数组idArr中
   selectionIdArr.value = []
   val.forEach(item => {
-    selectionIdArr.value.push(item.id)
+    selectionIdArr.value.push(item.ID)
+
   })
-  // console.log(selectionIdArr.value)
+  // console.log("selectionIdArr数据====>",selectionIdArr.value)
 }
 
 </script>
@@ -206,13 +226,13 @@ const handleSelectionChange = (val) => {
    <!-- 若dialogType为add时，title为添加数据，否则为编辑数据 -->
   <el-dialog v-model="dialogFormVisible" :title="dialogType === 'add' ? '添加数据' : '编辑数据'" width="500" >
     <el-form :model="FormData">
-      <el-form-item label="姓名" :label-width="'140px'">
+      <el-form-item label="姓名" :label-width="'140px'" prop="name" >
         <el-input v-model="FormData.name" autocomplete="off" />
       </el-form-item>
-      <el-form-item label="电话" :label-width="'140px'">
+      <el-form-item label="电话" :label-width="'140px'" prop="phone">
         <el-input v-model="FormData.phone" autocomplete="off" />
       </el-form-item>
-      <el-form-item label="地址" :label-width="'140px'">
+      <el-form-item label="地址" :label-width="'140px'" prop="address">
         <el-input v-model="FormData.address" autocomplete="off" />
       </el-form-item>
     </el-form>

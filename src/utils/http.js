@@ -64,11 +64,12 @@ export async function put(url, params) {
 
 
 
-export async function del(url) {
+export async function del(url, params) {
   try {
     const res = await http({
       url: url,
       method: 'delete',
+      data: params
     });
     ElMessage.success(res.data.msg)
     return res;
